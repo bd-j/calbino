@@ -9,8 +9,7 @@ import numpy as np
 import h5py
 from sedpy.observate import load_filters, getSED
 
-#libname = "/Users/bjohnson/Codes/SPS/ckc/ckc/spectra/lores/c3k_v1.3_R5K.h5"
-libname = "c3k_v1.3_R5K.Fstars.h5"
+
 lightspeed = 3e18
 
 
@@ -44,7 +43,7 @@ def choose_model(mags, filters, libwave, libflux, nmod=1):
     return libflux[best, :]
 
 
-def get_library():
+def get_library(libname="data/c3k_v1.3_R5K.Fstars.h5"):
     """Here's the library, after removing stars with very non-solar metallicities
 
     :returns libwave:
@@ -132,9 +131,9 @@ if __name__ == "__main__":
 
     # You probably want to median filter the calibration vector. Perhaps after
     # some sigma clipping.  Differences on small scales could be due to model
-    # imperfections (wrong metallicity, wrong gravity for model, LSF mismatch.)
-    # You could also fit the calibration vector with a polynomial, taking into
-    # account errors
+    # imperfections (wrong metallicity, wrong gravity, wrong redshift for model,
+    # LSF mismatch.) You could also fit the calibration vector with a
+    # polynomial, taking into account uncertainties on the spectrum
     from scipy.signal import medfilt
     smoothed_calibration = medfilt(calibration, 101)
 
@@ -145,7 +144,9 @@ if __name__ == "__main__":
     ax.plot(data_wave, calibration, label="raw calibration")
     ax.plot(data_wave, smoothed_calibration, label="smoothed calibration")
     ax.legend()
-    ax.set_ylabel("actual / input")
+    ax.text(0.1, 0.9, "Fluxed spectrum = $\mathcal{C}$ * (Instrumental Spectrum)",
+            transform=ax.transAxes)
+    ax.set_ylabel("$\mathcal{C}$")
 
     ax = axes[1]
     ax.plot(data_wave, data_flux, label="Bino spectrum")
